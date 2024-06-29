@@ -3,6 +3,9 @@
         <li v-for="item in files" :key="item.name">
             <div class="tree-item">
                 <summary v-if="item.children.length" @click="toggleExpand(item)" :class="{ 'expanded': item.expanded }">
+                    <span v-if="item.loading">
+                        <img src="../assets/spinner.gif" alt="loading" class="spinner-icon" />
+                    </span>
                 </summary>
                 <span @click="handleClick(item)" :class="{ 'changed': isChanged(item), 'file-name': true }">
                     {{ item.name }}
@@ -39,7 +42,16 @@ export default {
             }
         },
         toggleExpand(item) {
-            item.expanded = !item.expanded;
+            if (item.expanded) {
+                item.expanded = false;
+            } else {
+                // Simulate a loading state before expanding
+                item.loading = true;
+                setTimeout(() => {
+                    item.expanded = true;
+                    item.loading = false;
+                }, 500); // Adjust the timeout duration as needed
+            }
         },
         isChanged(item) {
             // Check if the file exists in diffResults and has changes
@@ -201,5 +213,13 @@ export default {
 .tree summary::before {
     z-index: 1;
     background: #696 url('./assets/expand-collapse.svg') 0 0;
+}
+
+.spinner-icon {
+    width: 16px;
+    /* Adjust size as needed */
+    height: 16px;
+    /* Adjust size as needed */
+    vertical-align: middle;
 }
 </style>
