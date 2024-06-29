@@ -1,0 +1,22 @@
+{
+  "name": "zip-diff-viewer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "diff": "^5.2.0",
+    "diff2html": "^3.4.48",
+    "jszip": "^3.10.1",
+    "vue": "^3.4.29",
+    "vue-toastification": "^2.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "vite": "^5.3.1"
+  }
+}
