@@ -141,9 +141,9 @@ export default {
             outputFormat: 'side-by-side',
           });
         } else if (content1) {
-          html = '<div class="unique-file">Only in ZIP 1</div>';
+          html = `<div class="unique-file">Only in ZIP ${this.file1.name} </div>`;
         } else {
-          html = '<div class="unique-file">Only in ZIP 2</div>';
+          html = `<div class="unique-file">Only in ZIP ${this.file2.name} </div>`;
         }
 
         diffResults.push({ file, html });

@@ -1,12 +1,13 @@
 <template>
     <ul class="tree">
-        <li v-for="item in files" :key="item.name">
+        <li v-for="item in files" :key="item.name" :style="getIconStyle(item)">
             <div class="tree-item">
                 <summary v-if="item.children.length" @click="toggleExpand(item)" :class="{ 'expanded': item.expanded }">
                     <span v-if="item.loading">
                         <img src="../assets/spinner.gif" alt="loading" class="spinner-icon" />
                     </span>
                 </summary>
+                <!-- <img :src="getIcon(item)" alt="" class="file-icon" /> -->
                 <span @click="handleClick(item)" :class="{ 'changed': isChanged(item), 'file-name': true }">
                     {{ item.name }}
                     <span v-if="item.modifiedCount" class="modified-count">{{ item.modifiedCount }}</span>
@@ -20,6 +21,8 @@
 </template>
   
 <script>
+import { getIconForFile, getIconForFolder } from '../utils/fileIcons';
+
 export default {
     name: 'TreeView',
     props: {
@@ -71,6 +74,17 @@ export default {
                     file.modified = this.isChanged(file);
                 }
             });
+        },
+        getIcon(item) {
+            if (item.children && item.children.length > 0) {
+                return getIconForFolder(item.expanded);
+            }
+            return getIconForFile(item.name);
+        },
+        getIconStyle(item) {
+            return {
+                '--icon-url': `url(${this.getIcon(item)})`
+            }
         }
     }
 };
@@ -207,12 +221,15 @@ export default {
     width: calc(2 * var(--radius));
     height: calc(2 * var(--radius));
     border-radius: 50%;
-    background: #ddd;
+}
+
+.tree li::after {
+    background: var(--icon-url);
 }
 
 .tree summary::before {
     z-index: 1;
-    background: #696 url('./assets/expand-collapse.svg') 0 0;
+    background: var(--icon-url);
 }
 
 .spinner-icon {
@@ -220,6 +237,13 @@ export default {
     /* Adjust size as needed */
     height: 16px;
     /* Adjust size as needed */
+    vertical-align: middle;
+}
+
+.file-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
     vertical-align: middle;
 }
 </style>
