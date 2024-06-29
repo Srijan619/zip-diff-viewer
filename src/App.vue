@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>ZIP File Diff Viewer</h1>
+    <h1>Zip Diff Viewer</h1>
     <FileUploader buttonText="Upload ZIP Files" @files-selected="handleFilesSelected" />
     <button @click="compareZips">Compare ZIPs</button>
     <div v-if="loading" class="loading">
