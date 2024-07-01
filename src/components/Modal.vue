@@ -46,6 +46,7 @@ export default {
     max-width: 90%;
     max-height: 90%;
     position: relative;
+    overflow: auto;
 }
 
 .modal-header {

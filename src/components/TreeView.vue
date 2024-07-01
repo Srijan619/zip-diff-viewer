@@ -19,7 +19,7 @@
         </li>
     </ul>
 </template>
-  
+
 <script>
 import { getIconForFile, getIconForFolder } from '../utils/fileIcons';
 
@@ -35,7 +35,25 @@ export default {
             required: true
         }
     },
+    data() {
+        return {
+            previousFiles: null
+        };
+    },
+    watch: {
+        files: {
+            handler(newFiles, oldFiles) {
+                // Check if there are previous files and if they have changed
+                if (!this.previousFiles || this.previousFiles !== oldFiles) {
+                    this.autoExpandModifiedFolders(newFiles); // Expand modified folders
+                    this.previousFiles = oldFiles; // Update previousFiles with oldFiles
+                }
+            },
+            deep: true // Watch changes deeply in the files array
+        }
+    },
     created() {
+        // Initial setup to detect modified files
         this.updateModifiedState(this.files);
     },
     methods: {
@@ -45,16 +63,28 @@ export default {
             }
         },
         toggleExpand(item) {
+            if (!item.children.length) return; // Only toggle if it's a directory
+
             if (item.expanded) {
                 item.expanded = false;
             } else {
-                // Simulate a loading state before expanding
                 item.loading = true;
                 setTimeout(() => {
                     item.expanded = true;
                     item.loading = false;
                 }, 500); // Adjust the timeout duration as needed
             }
+        },
+        autoExpandModifiedFolders(files) {
+            files.forEach(file => {
+                if (file.children && file.children.length > 0) {
+                    this.autoExpandModifiedFolders(file.children);
+                    // Expand the folder if it has modified children
+                    if (file.children.some(child => child.modified)) {
+                        file.expanded = true;
+                    }
+                }
+            });
         },
         isChanged(item) {
             // Check if the file exists in diffResults and has changes
@@ -89,32 +119,23 @@ export default {
     }
 };
 </script>
-  
+
 <style scoped>
 .tree-view {
     list-style-type: none;
     padding: 0;
     margin: 0;
     font-family: Arial, sans-serif;
-    /* Ensure full width */
     text-align: left;
 }
 
 .tree-item {
     display: flex;
-    /* align-items: center;
-    padding: 8px 16px;  */
     margin-top: 8px;
-    /* Adjust padding for item */
-    /* border-bottom: .1px solid #444; */
-    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
-    /* Dark border between items */
 }
 
 .changed {
-    /* Darker grey for changed files */
     color: #000000;
-    /* White text */
 }
 
 .changed::before {
@@ -123,18 +144,12 @@ export default {
 
 .file-name {
     flex: 1;
-    /* Take remaining space */
     overflow: hidden;
-    /* Hide overflow text */
     text-overflow: ellipsis;
-    /* Ellipsis for overflow text */
     white-space: nowrap;
-    /* No wrapping */
     padding-left: 8px;
-    /* Padding for file name */
     cursor: default;
     text-align: left;
-    /* Pointer cursor on hover */
 }
 
 .modified-count {
@@ -149,12 +164,10 @@ export default {
 
 .tree-view>li {
     margin-left: 0;
-    /* Ensure no left margin for top-level items */
 }
 
 .tree-view ul {
     padding-left: 20px;
-    /* Adjust padding for nested tree views */
 }
 
 .tree {
@@ -234,9 +247,7 @@ export default {
 
 .spinner-icon {
     width: 16px;
-    /* Adjust size as needed */
     height: 16px;
-    /* Adjust size as needed */
     vertical-align: middle;
 }
 
